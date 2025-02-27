@@ -3,11 +3,13 @@ import { usePage } from "@inertiajs/react";
 
 import { useEffect, useState } from "react";
 import TextInput from "@/Components/TextInput";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import ConversationItem from "@/Components/App/ConversationItem";
 
 const ChatLayout = ({children}) => {
     const page = usePage();
     const converstations = page.props.converstations;
-    const selectedConverstation = page.props.selectedConverstation;
+    const selectedConverstation = page.props.selectedConversation;
     console.log("converstations", converstations);
     console.log("selectedConverstation", selectedConverstation);
 
@@ -25,38 +27,39 @@ const ChatLayout = ({children}) => {
         )
     }
 
-
     useEffect(()=> {
         setLocalConversations(converstations);
     }, [converstations]);
 
     useEffect(()=> {
-        localConversations.sort((a, b) => {
-            if (a.blocked_at && b.blocked_at) {
-                return a.blocked_at > b.blocked_at ? 1 : -1;
-            }
-            else if (a.blocked_at) {
-                return 1;
-            }
-            else if (b.blocked_at) {
-                return -1;
-            }
+        setSortedConversations(
+            localConversations.sort((a, b) => {
+                if (a.blocked_at && b.blocked_at) {
+                    return a.blocked_at > b.blocked_at ? 1 : -1;
+                }
+                else if (a.blocked_at) {
+                    return 1;
+                }
+                else if (b.blocked_at) {
+                    return -1;
+                }
 
-            if (a.last_message_date && b.last_message_date) {
-                return b.last_message_date.localeCompare(
-                    a.last_message_date
-                )
-            }
-            else if (a.last_message_date) {
-                return -1;
-            }
-            else if (b.last_message_date) {
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        })
+                if (a.last_message_date && b.last_message_date) {
+                    return b.last_message_date.localeCompare(
+                        a.last_message_date
+                    )
+                }
+                else if (a.last_message_date) {
+                    return -1;
+                }
+                else if (b.last_message_date) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            })
+        );
     }, [localConversations]);
 
     useEffect(() => {
@@ -104,7 +107,7 @@ const ChatLayout = ({children}) => {
                         selectedConverstation ? "-ml-[100%] sm:ml-0" : ""
                     }`}
                 >
-                    <div className="flex items-center justify-between py-2 px-3 text-xl font-medium">
+                    <div className="flex items-center justify-between py-2 px-3 text-xl font-medium text-gray-200">
                         My Conversations
                         <div className="tooltip tooltip-left" data-tip="Create new Group">
                             <button className="text-gray-400 hover:text-gray-200">
@@ -128,7 +131,7 @@ const ChatLayout = ({children}) => {
                                             ? "group_"
                                             : "user_"
                                     }${converstation.id}`}
-                                    converstation={converstation}
+                                    conversation={converstation}
                                     online={!!isUserOnline(converstation.id)}
                                     selectedConverstation={selectedConverstation}
                                 />
