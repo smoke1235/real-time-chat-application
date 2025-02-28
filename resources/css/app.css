@@ -14,3 +14,20 @@
     right: 1%;
     outline-width: 1px;
 }
+
+.chat-message-content > blockquote,
+.chat-message-content > dl,
+.chat-message-content > dd,
+.chat-message-content > h1,
+.chat-message-content > h2,
+.chat-message-content > h3,
+.chat-message-content > h4,
+.chat-message-content > h5,
+.chat-message-content > h6,
+.chat-message-content > hr,
+.chat-message-content > figure,
+.chat-message-content > p,
+.chat-message-content > pre {
+    margin-top: 0;
+    margin-bottom: 5px;
+}

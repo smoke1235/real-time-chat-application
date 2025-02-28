@@ -2,14 +2,78 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import { useEventBus } from '@/EventBus';
 import { Link, usePage } from '@inertiajs/react';
+
 import { useEffect, useState } from 'react';
 
 export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+    const page = usePage();
+    const user = page.props.auth.user;
+    const converstations = page.props.converstations;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+
+    const { emit } = useEventBus();
+
+    useEffect(() => {
+        converstations.forEach((conversation) => {
+            let chanel = `message.group.${conversation.id}`;
+
+            if (conversation.is_user) {
+                chanel = `message.user.${[
+                    parseInt(user.id),
+                    parseInt(conversation.id),
+                ]
+                .sort((a, b) => a - b)
+                .join("-")}`;
+            }
+
+            console.log('Start listening on channel ', chanel);
+
+            Echo.private(chanel)
+                .error((error) => {
+                    console.error(error);
+                })
+                .listen("SocketMessage", (e) => {
+                    console.log("SocketMessage", e);
+                    const message = e.message;
+
+                    emit("message.created", message);
+
+                    if (message.sender_id === user.id) {
+                        return;
+                    }
+
+                    emit("newMessageNotification", {
+                        user: message.sender,
+                        group_id: message.group_id,
+                        message: message.message || `Shared ${message.attachments.length === 1 ? "an attachment" : message.attachments.length + " attachments"}`,
+
+                    })
+                });
+
+        });
+
+        return () => {
+            converstations.forEach((conversation) => {
+                let chanel = `message.group.${conversation.id}`;
+
+                if (conversation.is_user) {
+                    chanel = `message.user.${[
+                        parseInt(user.id),
+                        parseInt(conversation.id),
+                    ]
+                    .sort((a, b) => a - b)
+                    .join("-")}`;
+                }
+
+                Echo.leave(chanel);
+
+            });
+        };
+    }, [converstations])
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 h-screen flex flex-col">
