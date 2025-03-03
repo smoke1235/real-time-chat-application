@@ -1,3 +1,4 @@
+import AttachmentPreviewModal from '@/Components/App/AttachmentPreviewModal';
 import ConverstationHeader from '@/Components/App/ConverstationHeader';
 import MessageInput from '@/Components/App/MessageInput';
 import MessageItem from '@/Components/App/MessageItem';
@@ -16,6 +17,8 @@ function Home({ selectedConversation = null, messages = null }) {
     const messagesCtrRef = useRef(null);
     const loadMoreIntersect = useRef(null);
     const { on } = useEventBus();
+    const [showAttachmentPreview, setShowAttachmentPreview] = useState(false);
+    const [previewAttachment, setPreviewAttachment] = useState({});
 
     const loadMoreMessages = useCallback(() => {
         if (noMoreMessages) {
@@ -118,6 +121,16 @@ function Home({ selectedConversation = null, messages = null }) {
         };
     }, [localMessages]);
 
+    const onAttachmentClick = (attachments, ind) => {
+
+        setPreviewAttachment({
+            attachments,
+            ind
+        });
+
+        setShowAttachmentPreview(true);
+    };
+
     return (
         <>
             {!messages && (
@@ -152,6 +165,7 @@ function Home({ selectedConversation = null, messages = null }) {
                                     <MessageItem
                                         key={message.id}
                                         message={message}
+                                        attachmentClick={onAttachmentClick}
                                     />
                                 ))}
                             </div>
@@ -159,6 +173,15 @@ function Home({ selectedConversation = null, messages = null }) {
                     </div>
 
                     <MessageInput conversation={selectedConversation} />
+
+                    {previewAttachment.attachments && (
+                        <AttachmentPreviewModal
+                            attachments={previewAttachment.attachments}
+                            index={previewAttachment.ind}
+                            show={showAttachmentPreview}
+                            onClose={()=> setShowAttachmentPreview(false)}
+                        />
+                    )}
                 </>
             )}
         </>
