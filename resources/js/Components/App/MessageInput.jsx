@@ -14,6 +14,7 @@ import EmojiPicker from "emoji-picker-react";
 import { isAudio, isImage } from "@/helpers";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import AttachmentPreview from "./AttachmentPreview";
+import AudioRecorder from "./AudioRecorder";
 
 const MessageInput = ({conversation = null}) => {
 
@@ -115,6 +116,10 @@ const MessageInput = ({conversation = null}) => {
         axios.post(route("message.store"), data);
     }
 
+    const recordedAudioReady = (file, url) => {
+        setChosenFiles((prevFiles) => [...prevFiles, {file, url}]);
+    }
+
     return (
         <div className="flex flex-wrap items-start border-t border-slate-700 py-3">
             <div className="order-2 flex-1 xs:flex-none xs:order-1 p-2">
@@ -137,6 +142,7 @@ const MessageInput = ({conversation = null}) => {
                         className="absolute left-0 top-0 right-0 bottom-0 z-20 opacity-0 cursor-pointer"
                     />
                 </button>
+                <AudioRecorder fileReady={recordedAudioReady}/>
             </div>
             <div className="order-1 px-3 xs:p-0 min-w-[220px] basis-full xs:basis-0 xs:order-2 flex-1 relative">
                 <div className="flex">
@@ -146,9 +152,6 @@ const MessageInput = ({conversation = null}) => {
                         onSend={onSendClick}
                     />
                     <button className="btn btn-info rounded-l-none" onClick={onSendClick} disabled={messageSending}>
-                       { /* {messageSending && (
-                            <span className="loading loading-spinner loading-xs"></span>
-                        )} */}
                         <PaperAirplaneIcon className="w-6" />
                         <span className="hidden sm:inline">Send</span>
                     </button>
