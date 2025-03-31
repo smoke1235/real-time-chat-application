@@ -42,7 +42,6 @@ const MessageInput = ({conversation = null}) => {
     }
 
     const onSendClick = () => {
-
         if (messageSending) {
             return;
         }

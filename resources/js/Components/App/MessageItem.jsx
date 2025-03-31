@@ -5,6 +5,7 @@ import UserAvatar from "./UserAvatar";
 
 import { formatMessageDateLong } from "@/helpers";
 import MessageAttachments from "./MessageAttachments";
+import MessageOptionsDropdown from "./MessageOptionsDropdown";
 
 const MessageItem = ({message, attachmentClick}) => {
 
@@ -27,10 +28,15 @@ const MessageItem = ({message, attachmentClick}) => {
                 </time>
             </div>
 
-            <div className={
-                "chat-bubble relative " +
-                (message.sender_id !== currentUser.id ? "chat-bubble-info" : "")
-            }>
+            <div
+                className={
+                    "chat-bubble relative " +
+                    (message.sender_id !== currentUser.id ? "chat-bubble-info" : "")
+                }
+            >
+                {message.sender_id == currentUser.id && (
+                    <MessageOptionsDropdown message={message} />
+                )}
                 <div className="chat-message">
                     <div className="chat-message-content">
                         <ReactMarkdown>{message.message}</ReactMarkdown>
